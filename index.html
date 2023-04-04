@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>COVID-19 Dashboard</title>
+	
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+	<!-- Highcharts JS -->
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+	<script src="https://code.highcharts.com/modules/exporting.js"></script>
+	<script src="https://code.highcharts.com/modules/export-data.js"></script>
+	<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+
+	<style type="text/css">
+		.card {
+			margin-bottom: 20px;
+      margin: 20px;
+			padding: 20px;
+			border: 1px solid #ccc;
+			box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
+		}
+	</style>
+</head>
+<body>
+	<div class="container-fluid">
+		<h1 class="text-center">COVID-19 Dashboard</h1>
+		<div class="row">
+				<!-- Card 1 - Bar Chart -->
+	<div class="col-md-12"> <!-- use 12 grid columns for full width -->
+		<div class="card"> <!-- create a card for the chart -->
+			<div class="card-body"> <!-- create a body for the card -->
+				<figure class="highcharts-figure"> <!-- create a figure for the chart -->
+					<div id="chart1"></div> <!-- add the chart to the figure -->
+				</figure>
+			</div>
+		</div>
+	</div>
+
+	<!-- Card 2 - Column Chart -->
+	<div class="col-sm-12 col-md-6 col-lg-6"> <!-- use 6 grid columns for small and medium screens and 12 grid columns for large screens -->
+		<div class="card"> <!-- create a card for the chart -->
+			<div class="card-body"> <!-- create a body for the card -->
+				<figure class="highcharts-figure"> <!-- create a figure for the chart -->
+					<div id="worldChart"></div> <!-- add the chart to the figure -->
+				</figure>
+			</div>
+		</div>
+	</div>
+
+	<!-- Card 3 - Pie Chart -->
+	<div class="col-sm-12 col-md-6 col-lg-6"> <!-- use 6 grid columns for small and medium screens and 12 grid columns for large screens -->
+		<div class="card"> <!-- create a card for the chart -->
+			<div class="card-body"> <!-- create a body for the card -->
+				<figure class="highcharts-figure"> <!-- create a figure for the chart -->
+					<div id="countryChart"></div> <!-- add the chart to the figure -->
+				</figure>
+			</div>
+		</div>
+	</div>
+
+	<div class="d-flex justify-content-center"> 
+		<a href="TopCOVID-19_15 CountriesAndSearch.html" target="_blank"><button type="button" class="btn btn-primary btn-lg btn-block mx-auto">The Top COVID-19 15 countries And  Search by country</button></a> 
+		<a href="SelectaCountry.html" target="_blank"><button type="button" class="btn btn-secondary btn-lg btn-block mx-auto">Covid-19 Cases by Country Select a Country</button></a> 
+	</div>
+
+			
+			
+			<!-- jQuery -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+	<!-- Bootstrap JS -->
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper-core.min.js"
+		integrity="sha384-fWm6nTJhdYmStaAiUE8y7Wn+LzQKo58B0vEeogrTBhFj4HqCvgY9XUJx6UWl6/Ch" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.min.js"
+		integrity="sha384-zZnI3wYKLrZADLQdRTrtP9XgNcNlVzzPT9X" crossorigin="anonymous"></script>
+
+    <script>	
+    
+    // Card 1 - Bar Chart 
+
+    async function getDataAndRenderChart() {
+  try {
+    const response = await fetch(`https://api.covid19api.com/summary`);
+    const data = await response.json();
+    
+    Highcharts.chart('chart1', {
+      chart: {
+        type: 'column'
+      },
+      title: {
+        align: 'left',
+        text: 'COVID-19 Global Summary (as of March 31, 2023)'
+      },
+      subtitle: {
+        align: 'left',
+        text: 'Source: COVID-19 API'
+      },
+      accessibility: {
+        announceNewData: {
+          enabled: true
+        }
+      },
+      xAxis: {
+        type: 'category'
+      },
+      yAxis: {
+        title: {
+          text: 'Total percent market share'
+        },
+        labels: {
+          formatter: function() {
+            return this.value.toLocaleString();
+          }
+        }
+      },
+      legend: {
+        enabled: false
+      },
+      plotOptions: {
+        series: {
+          borderWidth: 0,
+          dataLabels: {
+            enabled: true,
+            format: '{point.y:.1f}%'
+          }
+        }
+      },
+      tooltip: {
+        headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+        pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f}%</b> of total<br/>'
+      },
+      series: [
+        {
+          name: 'COVID-19 Global Summary',
+          colorByPoint: true,
+          data: [
+            {
+              name: 'Total Confirmed',
+              y: data.Global.TotalConfirmed,
+              drilldown: 'Chrome'
+            },
+            {
+              name: 'Total Deaths',
+              y: data.Global.TotalDeaths,
+              drilldown: 'Safari'
+            },
+            {
+              name: 'Total Recovered',
+              y: data.Global.TotalRecovered,
+              drilldown: 'Firefox'
+            }
+          ]
+        }
+      ]
+    });
+  } catch (error) {
+    console.log('Error:', error);
+  }
+}
+
+getDataAndRenderChart();
+
+
+//CARD 2 
+// Worldwide COVID-19 Cases chart
+fetch("https://api.covid19api.com/world/total")
+		  .then(response => response.json())
+		  .then(data => {
+			// Create the chart
+			Highcharts.chart('worldChart', {
+				chart: {
+					type: 'bar'
+				},
+				title: {
+					text: 'Worldwide COVID-19 Cases'
+				},
+				xAxis: {
+					categories: ["Confirmed Cases", "Deaths", "Recovered"]
+				},
+				yAxis: {
+					title: {
+						text: 'Number of Cases'
+					}
+				},
+				series: [{
+					name: 'COVID-19 Cases',
+					data: [data.TotalConfirmed, data.TotalDeaths, data.TotalRecovered],
+					color: 'rgba(255, 99, 132, 0.2)',
+					borderColor: 'rgba(255, 99, 132, 1)',
+					borderWidth: 1
+				}]
+			});
+		  });
+
+		  //card 3
+		  // COVID-19 Cases by Country chart
+		fetch("https://api.covid19api.com/summary")
+		  .then(response => response.json())
+		  .then(data => {
+			// Prepare the data
+			var countries = [];
+			var confirmedCases = [];
+			data.Countries.forEach(function(country) {
+				countries.push(country.Country);
+				confirmedCases.push(country.TotalConfirmed);
+			});
+	
+			// Create the chart
+			Highcharts.chart('countryChart', {
+				chart: {
+					type: 'bar'
+				},
+				title: {
+					text: 'COVID-19 Cases by Country'
+				},
+				xAxis: {
+					categories: countries,
+					title: {
+						text: 'Country'
+					}
+				},
+				yAxis: {
+					title: {
+						text: 'Number of Cases'
+					}
+				},
+				series: [{
+					name: 'Confirmed Cases',
+					data: confirmedCases,
+					color: 'rgba(255, 99, 132, 0.2)',
+					borderColor: 'rgba(255, 99, 132, 1)',
+					borderWidth: 1
+				}]
+			});
+		  });
+		
+		  // <!-- Search By Country --> - Total cases by country
+		  
+</script>
+</body>
+</html>

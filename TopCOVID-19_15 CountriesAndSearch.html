@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>The Top COVID-19 15 countries   </title>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<style>
+		table {
+			border-collapse: collapse;
+			width: 100%;
+			text-align: left;
+			margin-top: 20px;
+			margin-bottom: 20px;
+		}
+		th, td {
+			padding: 8px;
+			border: 1px solid #ddd;
+		}
+		th {
+			background-color: #f2f2f2;
+		}
+		tr:nth-child(even) {
+			background-color: #f2f2f2;
+		}
+	</style>
+</head>
+<body>
+	<h1>The Top COVID-19 15 countries in the table </h1>
+	<table id="covidTable">
+		<thead>
+			<tr>
+				<th>Country</th>
+				<th>Cases</th>
+				<th>Deaths</th>
+				<th>Recovered</th>
+				<th>Active</th>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
+	<div class="card">
+		<canvas id="chart6"></canvas>
+	</div>
+	<div>
+		<label for="search-country">Search by country: </label>
+		<input type="text" id="search-country">
+		<button id="search-button">Search</button>
+	</div>
+	<script>
+		// Fetch data from COVID-19 API
+		fetch('https://api.covid19api.com/summary')
+			.then(response => response.json())
+			.then(data => {
+				// Select table body element
+				let tableBody = document.querySelector('#covidTable tbody');
+				// Sort countries by total confirmed cases
+				data.Countries.sort((a, b) => b.TotalConfirmed - a.TotalConfirmed);
+				// Loop through top 15 countries and add rows to table
+				data.Countries.slice(0, 15).forEach(country => {
+					let row = document.createElement('tr');
+					// Add data to row
+					row.innerHTML = `
+						<td>${country.Country}</td>
+						<td>${country.TotalConfirmed}</td>
+						<td>${country.TotalDeaths}</td>
+						<td>${country.TotalRecovered}</td>
+						<td>${country.TotalConfirmed - country.TotalRecovered - country.TotalDeaths}</td>
+					`;
+					// Add row to table body
+					tableBody.appendChild(row);
+				});
+			});
+      // This program is almost the same as the previous one, 
+      //but it sorts the list of countries by total confirmed cases and then only displays the top 15 countries in the table.
+      //This makes the table smaller and easier to read, while still conveying important information about the current state of the pandemic.
+
+
+
+
+
+
+	  // Search Total cases by country with Chart
+		const ctx1 = document.getElementById('chart6').getContext('2d');
+		const chart1 = new Chart(ctx1, {
+			type: 'bar',
+			data: {
+				labels: [],
+				datasets: [{
+					label: 'Total Cases',
+					data: [],
+					backgroundColor: 'rgba(255, 99, 132, 0.2)',
+					borderColor: 'rgba(255, 99, 132, 1)',
+					borderWidth: 1
+				}]
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				scales: {
+					yAxes: [{
+						ticks: {
+							beginAtZero: true
+						}
+					}]
+				}
+			}
+		});
+
+		// Search button event listener
+		const searchButton = document.getElementById('search-button');
+		searchButton.addEventListener('click', () => {
+			const searchCountry = document.getElementById('search-country').value;
+			if (!searchCountry) {
+				return;
+			}
+			const url = `https://api.covid19api.com/total/country/${searchCountry}`;
+			fetch(url)
+				.then(response => response.json())
+				.then(data => {
+					if (data.length === 0) {
+						alert('No data available for the selected country');
+						return;
+					}
+					const labels = data.map(entry => entry.Date);
+					const dataPoints = data.map(entry => entry.Confirmed);
+
+					chart1.data.labels = labels;
+					chart1.data.datasets[0].data = dataPoints;
+					chart1.update();
+				})
+				.catch(error => {
+					console.log('Error:', error);
+				});
+		});
+	</script>
+	
+	<style>
+		.card {
+			margin: 20px;
+			padding: 20px;
+			border: 1px solid #ccc;
+			box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
+		}
+	</style>
+	</script>
+  
+</body>
+</html>
