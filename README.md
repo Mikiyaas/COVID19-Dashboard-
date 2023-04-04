@@ -114,4 +114,4 @@ The following code is a simple web application that utilizes the COVID-19 API to
 
 ### **Link to Live Demo**
 
-The live demo for this code portfolio can be accessed at [Click here](https://mikiyaas.github.io/COVID19-Dashboard-/).
+The live demo for this code COVID19-Dashboard can be accessed at [Click here](https://mikiyaas.github.io/COVID19-Dashboard-/).
